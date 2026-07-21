@@ -2,931 +2,265 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gerador de Milhares - Carlos Henrich</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#030b18" />
+  <meta name="description" content="palpiteiro recreativo de milhares Carlos Henrich JB" />
+  <title>Palpiteiro de Milhares | Carlos Henrich JB</title>
   <style>
-    :root {
-      --bg: #030b1c;
-      --bg-2: #05142d;
-      --card: rgba(8, 20, 46, 0.78);
-      --card-strong: rgba(10, 26, 58, 0.92);
-      --blue: #56c8ff;
-      --blue-2: #2ea7ff;
-      --blue-3: #1388ff;
-      --blue-soft: rgba(86, 200, 255, 0.14);
-      --cyan: #90efff;
-      --white: #ffffff;
-      --text: #eaf8ff;
-      --text-soft: rgba(234, 248, 255, 0.76);
-      --border: rgba(86, 200, 255, 0.35);
-      --border-strong: rgba(86, 200, 255, 0.62);
-      --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      --glow: 0 0 16px rgba(86, 200, 255, 0.28), 0 0 34px rgba(46, 167, 255, 0.18);
-      --radius: 24px;
-      --radius-xl: 34px;
-      --radius-pill: 999px;
-      --font-title: "Orbitron", "Segoe UI", Arial, sans-serif;
-      --font-body: Inter, "Segoe UI", Arial, sans-serif;
-      --transition: 220ms cubic-bezier(.2, .8, .2, 1);
+    :root{
+      --bg:#020711;
+      --bg2:#061224;
+      --card:rgba(4,14,30,.88);
+      --card2:rgba(5,20,42,.92);
+      --line:rgba(55,164,255,.45);
+      --blue:#19a7ff;
+      --blue2:#006dff;
+      --cyan:#62e7ff;
+      --text:#f5f9ff;
+      --muted:#9db0c9;
+      --green:#19cf77;
+      --shadow:0 0 35px rgba(0,126,255,.16);
+      --radius:28px;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      min-height: 100vh;
-      font-family: var(--font-body);
-      color: var(--text);
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;background:#01040a;min-height:100%}
+    @keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    @keyframes glow{0%,100%{box-shadow:0 0 18px rgba(25,167,255,.20)}50%{box-shadow:0 0 34px rgba(98,231,255,.42)}}
+    @keyframes textGlow{0%,100%{text-shadow:0 0 14px rgba(25,167,255,.30)}50%{text-shadow:0 0 28px rgba(98,231,255,.58)}}
+    @keyframes shimmer{0%{transform:translateX(-140%) skewX(-18deg)}100%{transform:translateX(330%) skewX(-18deg)}}
+    @keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(25,167,255,.35)}70%{box-shadow:0 0 0 13px rgba(25,167,255,0)}100%{box-shadow:0 0 0 0 rgba(25,167,255,0)}}
+    @keyframes popIn{from{opacity:0;transform:scale(.86) translateY(14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+    @keyframes selectedBounce{0%{transform:scale(1)}45%{transform:scale(.9)}100%{transform:scale(1)}}
+    body{
+      margin:0;
+      color:var(--text);
       background:
-        radial-gradient(circle at top, rgba(45, 162, 255, 0.16), transparent 30%),
-        radial-gradient(circle at bottom, rgba(52, 210, 255, 0.10), transparent 30%),
-        linear-gradient(180deg, #020814 0%, #020d1f 36%, #041428 100%);
-      overflow-x: hidden;
-      position: relative;
+        radial-gradient(circle at 10% 0%, rgba(0,119,255,.18), transparent 28%),
+        radial-gradient(circle at 90% 18%, rgba(0,212,255,.10), transparent 24%),
+        linear-gradient(180deg,var(--bg),#01040a 72%);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      min-height:100vh;
+      min-height:100dvh;
+      overflow-x:hidden;
+      animation:pageIn .55s ease both;
     }
-
-    #particle-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      opacity: 0.95;
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .wrap{width:min(100%,980px);margin:auto}
+    .topbar{
+      position:sticky;top:0;z-index:20;
+      backdrop-filter:blur(16px);
+      background:rgba(2,7,17,.88);
+      border-bottom:1px solid rgba(25,167,255,.28);
     }
-
-    .app {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      min-height: 100vh;
-      padding: clamp(18px, 4vw, 30px) 14px 28px;
-      display: flex;
-      justify-content: center;
+    .topbar-inner{display:flex;align-items:center;gap:16px;padding:18px 20px;animation:slideUp .55s .08s ease both}
+    .logo{
+      width:68px;height:68px;border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(145deg,#07366f,#0b1020);
+      border:2px solid var(--blue);box-shadow:0 0 24px rgba(25,167,255,.35);
+      font-weight:900;font-size:24px;letter-spacing:-1px;
+      animation:float 3.2s ease-in-out infinite,glow 2.8s ease-in-out infinite;
     }
-
-    .shell {
-      width: min(100%, 960px);
-      min-height: calc(100vh - 36px);
-      display: flex;
-      flex-direction: column;
+    .brand{min-width:0;flex:1}
+    .brand h1{font-size:clamp(20px,4vw,31px);margin:0 0 3px;line-height:1.05}
+    .brand p{margin:0;color:var(--cyan);font-weight:800;letter-spacing:.16em;font-size:clamp(12px,2.6vw,17px)}
+    .date-box{width:60px;height:60px;border:1px solid var(--line);border-radius:20px;display:grid;place-items:center;background:#050b15;font-size:28px;animation:pulseRing 2.8s infinite;transition:transform .25s ease}.date-box:hover{transform:rotate(7deg) scale(1.06)}
+    main{padding:24px 18px 80px}
+    .hero,.panel,.results,.history{
+      border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(7,26,54,.88),rgba(2,7,16,.94));box-shadow:var(--shadow)
     }
-
-    .brand {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: clamp(22px, 4vw, 36px);
+    .hero{padding:42px 24px;text-align:center;margin-bottom:22px;overflow:hidden;position:relative;animation:slideUp .65s .12s ease both}
+    .hero:after{content:"";position:absolute;inset:auto -15% -45% 35%;height:240px;background:radial-gradient(circle,rgba(25,167,255,.18),transparent 65%);animation:float 4s ease-in-out infinite}
+    .eyebrow{color:var(--cyan);font-weight:900;letter-spacing:.16em;font-size:clamp(14px,3.5vw,22px)}
+    .hero h2{font-size:clamp(42px,9vw,76px);line-height:.93;margin:28px 0 20px;letter-spacing:-.05em}
+    .hero h2 span{display:block;color:var(--blue);text-shadow:0 0 20px rgba(25,167,255,.35);animation:textGlow 3s ease-in-out infinite}
+    .crown{font-size:48px;margin:14px 0;display:inline-block;animation:float 2.6s ease-in-out infinite}
+    .hero p{font-size:clamp(18px,4vw,28px);color:#dbe9fb;max-width:720px;margin:0 auto;line-height:1.25}
+    .hero p b{color:var(--cyan)}
+    .panel{padding:24px;margin-bottom:22px;animation:slideUp .7s .18s ease both}
+    .section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .section-kicker{margin:0;color:var(--cyan);letter-spacing:.15em;font-size:17px;font-weight:900}
+    .section-title{margin:7px 0 0;font-size:clamp(27px,5vw,39px);line-height:1.05}
+    .counter{flex:0 0 auto;min-width:110px;padding:16px 18px;border:2px solid var(--blue);border-radius:22px;text-align:center;color:var(--cyan);font-size:28px;font-weight:900;background:#030913;transition:.25s ease;animation:glow 3.2s ease-in-out infinite}.counter.bump{animation:selectedBounce .35s ease,glow 3.2s ease-in-out infinite}
+    label{display:block;color:var(--cyan);font-weight:850;font-size:clamp(18px,4vw,24px);margin:22px 0 10px}
+    label small{color:var(--muted);font-weight:600}
+    .name-input{width:100%;border:1px solid var(--line);border-radius:20px;background:#020711;color:white;padding:20px;font-size:21px;font-weight:700;outline:none;transition:border-color .25s,box-shadow .25s,transform .25s}.name-input:focus{transform:translateY(-2px)}
+    .name-input:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(25,167,255,.13)}
+    .animals{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:24px}
+    .animal{border:1px solid rgba(55,164,255,.34);background:linear-gradient(180deg,#030913,#02050b);border-radius:18px;min-height:150px;padding:14px 8px;color:white;text-align:center;transition:.25s transform,.25s border-color,.25s background,.25s box-shadow;animation:popIn .45s ease both;position:relative;overflow:hidden;touch-action:manipulation}
+    .animal:hover{transform:translateY(-5px) scale(1.025);border-color:var(--cyan);box-shadow:0 10px 25px rgba(0,109,255,.22)}.animal:active{transform:scale(.92)}
+    .animal.selected{border:2px solid var(--cyan);background:linear-gradient(180deg,rgba(0,109,255,.52),rgba(3,9,19,.98));box-shadow:0 0 24px rgba(25,167,255,.4);animation:selectedBounce .36s ease}.animal.selected:after{content:"✓";position:absolute;right:5px;top:4px;color:white;background:var(--blue2);width:18px;height:18px;border-radius:50%;font-size:12px;display:grid;place-items:center;animation:popIn .25s ease}
+    .animal .num{color:var(--cyan);font-weight:900;font-size:19px}
+    .animal .emoji{font-size:38px;display:block;margin:9px 0}
+    .animal .name{font-weight:800;font-size:14px;line-height:1.05}
+    .actions{display:grid;gap:14px;margin-top:30px}
+    .action{
+      width:100%;display:flex;align-items:center;gap:18px;text-align:left;padding:22px;border-radius:22px;border:1px solid var(--line);
+      color:white;background:linear-gradient(110deg,rgba(0,88,190,.35),rgba(2,7,17,.92));box-shadow:inset 0 0 30px rgba(25,167,255,.05);position:relative;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;animation:slideUp .45s ease both
+    }.action:before{content:"";position:absolute;inset:-30% auto -30% -35%;width:28%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);animation:shimmer 3.6s infinite}.action:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(0,109,255,.20)}.action:active{transform:scale(.97)}
+    .action:hover{border-color:var(--cyan)}
+    .action .icon{font-size:40px}
+    .action strong{display:block;color:#bfeaff;font-size:clamp(21px,4vw,29px)}
+    .action small{color:var(--muted);font-size:16px}
+    .action.whatsapp{border-color:rgba(25,207,119,.7);background:linear-gradient(110deg,rgba(13,113,71,.8),rgba(4,49,35,.92))}
+    .action.register{background:linear-gradient(110deg,rgba(0,110,255,.8),rgba(2,25,65,.96))}
+    .results,.history{padding:24px;margin-top:22px;display:none}
+    .results.show,.history.show{display:block;animation:slideUp .5s ease both}
+    .results-top{display:flex;align-items:center;justify-content:space-between;gap:14px}
+    .copy-all,.clear{border:1px solid var(--line);background:#020711;color:#bfeaff;border-radius:18px;padding:14px 18px;font-weight:850}
+    .result-row{display:grid;grid-template-columns:54px 1fr 45px;align-items:center;gap:12px;padding:22px 4px;border-bottom:1px solid rgba(55,164,255,.18);animation:slideUp .38s ease both}
+    .result-row:last-child{border-bottom:0}
+    .group-number{font-weight:900;color:var(--cyan);font-size:20px}
+    .milhar{font-weight:900;font-size:34px;letter-spacing:.12em}
+    .animal-label{color:#dbe9fb;font-size:18px;margin-top:4px}
+    .copy-one{background:none;border:0;color:white;font-size:28px;transition:transform .2s}.copy-one:hover{transform:scale(1.18) rotate(-7deg)}.copy-one:active{transform:scale(.86)}
+    .share{width:100%;margin-top:20px;border:1px solid var(--cyan);border-radius:20px;padding:19px;color:white;font-weight:900;font-size:18px;background:linear-gradient(90deg,#0056c8,#063c86);transition:transform .25s,box-shadow .25s;animation:pulseRing 3s infinite}.share:active{transform:scale(.97)}
+    .history-card{border:1px solid rgba(55,164,255,.2);border-radius:20px;background:#020711;padding:18px;margin-top:14px;animation:slideUp .42s ease both;transition:transform .25s,border-color .25s}.history-card:hover{transform:translateY(-3px);border-color:var(--cyan)}
+    .history-card h4{color:var(--cyan);margin:0 0 6px;font-size:20px}
+    .history-card p{margin:5px 0;color:#dcecff;line-height:1.45}
+    footer{text-align:center;color:var(--muted);padding:36px 20px calc(42px + env(safe-area-inset-bottom));line-height:1.5;font-size:14px}
+    footer a{color:var(--cyan)}
+    .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,24px);opacity:0;visibility:hidden;pointer-events:none;background:#dff7ff;color:#001226;padding:13px 18px;border-radius:14px;font-weight:800;z-index:50;transition:transform .25s ease,opacity .25s ease,visibility 0s linear .25s;box-shadow:0 10px 35px rgba(0,0,0,.3)}
+    .toast.show{transform:translate(-50%,0);opacity:1;visibility:visible;transition-delay:0s}
+    @media(max-width:700px){
+      main{padding:16px 10px 60px}
+      .topbar-inner{padding:11px 12px;gap:10px}.logo{width:50px;height:50px;font-size:18px}.date-box{width:48px;height:48px;border-radius:15px;font-size:23px}
+      .brand h1{font-size:18px}.brand p{font-size:10px;letter-spacing:.12em}
+      .hero{padding:27px 15px;border-radius:22px}.hero h2{font-size:39px;margin:21px 0 15px}.hero p{font-size:17px}.crown{font-size:38px}
+      .panel,.results,.history{padding:17px 11px;border-radius:22px}
+      .section-head{gap:8px;margin-bottom:14px}.section-title{font-size:24px}.section-kicker{font-size:13px}.counter{min-width:73px;padding:11px 9px;border-radius:17px;font-size:21px}
+      label{font-size:17px;margin-top:16px}.name-input{padding:15px 14px;border-radius:16px;font-size:17px}
+      .animals{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-top:17px}
+      .animal{min-height:105px;border-radius:13px;padding:8px 2px}
+      .animal .num{font-size:14px}.animal .emoji{font-size:26px;margin:6px 0}.animal .name{font-size:10px;letter-spacing:-.02em;overflow-wrap:anywhere}
+      .actions{gap:10px;margin-top:21px}.action{padding:16px 14px;border-radius:17px;gap:12px}.action .icon{font-size:31px}.action strong{font-size:18px}.action small{font-size:13px}
+      .result-row{grid-template-columns:43px 1fr 36px;padding:17px 2px}.milhar{font-size:28px}.animal-label{font-size:15px}
     }
-
-    .brand-name {
-      font-family: var(--font-title);
-      font-weight: 900;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      text-shadow: 0 0 16px rgba(86, 200, 255, 0.35), 0 0 36px rgba(19, 136, 255, 0.15);
-      font-size: clamp(1.25rem, 4vw, 2rem);
+    @media(max-width:360px){
+      .animals{gap:4px}.animal{min-height:96px;padding:7px 1px}.animal .emoji{font-size:23px}.animal .name{font-size:9px}.animal .num{font-size:13px}
+      .brand h1{font-size:16px}.brand p{font-size:9px}.logo{width:45px;height:45px}.date-box{width:43px;height:43px}
     }
-
-    .brand-badge {
-      border: 1px solid var(--border);
-      background: rgba(86, 200, 255, 0.08);
-      color: var(--text-soft);
-      padding: 10px 14px;
-      border-radius: var(--radius-pill);
-      backdrop-filter: blur(10px);
-      font-size: 0.86rem;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-      min-height: 40px;
-      min-width: 120px;
-    }
-
-    .view {
-      display: none;
-      flex: 1;
-      animation: fadeUp .35s ease;
-    }
-
-    .view.active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero {
-      min-height: calc(100vh - 175px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      gap: 20px;
-      padding-bottom: 20px;
-    }
-
-    .title {
-      font-family: var(--font-title);
-      text-transform: uppercase;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      color: var(--cyan);
-      text-shadow: 0 0 16px rgba(86, 200, 255, 0.32), 0 0 30px rgba(19, 136, 255, 0.15);
-      line-height: 1.04;
-    }
-
-    .hero-title {
-      font-size: clamp(2rem, 7vw, 4.8rem);
-      max-width: 10ch;
-    }
-
-    .section-title {
-      font-size: clamp(1.6rem, 4vw, 2.5rem);
-      text-align: center;
-      margin-bottom: 18px;
-    }
-
-    .subtitle {
-      color: var(--text-soft);
-      max-width: 650px;
-      line-height: 1.55;
-      font-size: clamp(1rem, 2.8vw, 1.12rem);
-      text-align: center;
-    }
-
-    .btn {
-      border: none;
-      outline: none;
-      cursor: pointer;
-      font-family: inherit;
-      transition: transform var(--transition), box-shadow var(--transition), filter var(--transition), background var(--transition), border-color var(--transition), opacity var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.28) 48%, transparent 72%);
-      transform: translateX(-130%);
-      transition: transform .75s ease;
-    }
-
-    .btn:hover::before { transform: translateX(130%); }
-    .btn:hover { transform: translateY(-3px) scale(1.01); }
-    .btn:active { transform: translateY(0) scale(.99); }
-    .btn:focus-visible,
-    .animal-card:focus-visible,
-    .qty-btn:focus-visible {
-      box-shadow: 0 0 0 3px rgba(86, 200, 255, 0.2), 0 0 0 6px rgba(86, 200, 255, 0.08);
-    }
-
-    .btn-primary,
-    .qty-btn {
-      background: linear-gradient(180deg, #9beaff 0%, #47c3ff 38%, #1d98ff 100%);
-      color: #04111f;
-      border: 2px solid rgba(180, 243, 255, 0.9);
-      box-shadow: 0 12px 28px rgba(29, 152, 255, 0.24), inset 0 1px 0 rgba(255,255,255,.35), 0 0 18px rgba(86, 200, 255, 0.18);
-      font-weight: 900;
-    }
-
-    .btn-start {
-      min-width: min(100%, 540px);
-      padding: 22px 28px;
-      border-radius: var(--radius-pill);
-      font-size: clamp(1.2rem, 4vw, 1.9rem);
-      animation: breathing 2.7s ease-in-out infinite;
-    }
-
-    @keyframes breathing {
-      0%, 100% { box-shadow: 0 12px 28px rgba(29, 152, 255, 0.24), inset 0 1px 0 rgba(255,255,255,.35), 0 0 18px rgba(86, 200, 255, 0.18); }
-      50% { box-shadow: 0 14px 32px rgba(29, 152, 255, 0.34), inset 0 1px 0 rgba(255,255,255,.35), 0 0 28px rgba(86, 200, 255, 0.28); }
-    }
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      width: 100%;
-    }
-
-    .animal-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .animal-card {
-      background: linear-gradient(180deg, rgba(9, 22, 50, 0.92), rgba(5, 14, 34, 0.98));
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      min-height: 174px;
-      padding: 16px 10px 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      gap: 12px;
-      cursor: pointer;
-      position: relative;
-      color: var(--white);
-      box-shadow: var(--shadow);
-      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
-    }
-
-    .animal-card::after {
-      content: "";
-      position: absolute;
-      inset: auto 12% 0 12%;
-      height: 70px;
-      background: radial-gradient(circle at center, rgba(86, 200, 255, 0.22), transparent 72%);
-      opacity: 0;
-      transition: opacity var(--transition);
-    }
-
-    .animal-card:hover,
-    .animal-card.selected {
-      transform: translateY(-4px) scale(1.01);
-      border-color: var(--border-strong);
-      box-shadow: 0 18px 34px rgba(0, 0, 0, 0.34), 0 0 18px rgba(86, 200, 255, 0.18);
-    }
-
-    .animal-card:hover::after,
-    .animal-card.selected::after {
-      opacity: 1;
-    }
-
-    .animal-icon { font-size: clamp(2.4rem, 5vw, 3rem); line-height: 1; }
-    .animal-index { color: rgba(234, 248, 255, 0.6); font-size: .9rem; font-weight: 700; }
-    .animal-name { font-size: clamp(.96rem, 2vw, 1.08rem); font-weight: 800; }
-    .animal-dezenas { font-size: .8rem; color: rgba(234, 248, 255, 0.66); }
-
-    .selection-header,
-    .results-view {
-      min-height: calc(100vh - 210px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 20px;
-    }
-
-    .selection-header {
-      align-items: center;
-      text-align: center;
-    }
-
-    .selected-chip {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 12px 18px;
-      border-radius: var(--radius-pill);
-      background: rgba(86, 200, 255, 0.08);
-      border: 1px solid var(--border);
-      color: var(--text-soft);
-      max-width: 720px;
-    }
-
-    .qty-options {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(90px, 1fr));
-      gap: 18px;
-      width: min(100%, 560px);
-    }
-
-    .qty-btn {
-      min-height: 102px;
-      border-radius: var(--radius-pill);
-      font-size: clamp(2rem, 6vw, 2.6rem);
-      animation: floatButton 3.5s ease-in-out infinite;
-    }
-
-    .qty-btn:nth-child(2) { animation-delay: .25s; }
-    .qty-btn:nth-child(3) { animation-delay: .5s; }
-
-    @keyframes floatButton {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    .btn-secondary,
-    .btn-back {
-      position: relative;
-      background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(242,248,255,0.98) 100%);
-      color: #08111e;
-      border: 2px solid rgba(120, 220, 255, 0.72);
-      box-shadow:
-        0 14px 30px rgba(0, 0, 0, 0.22),
-        0 0 0 1px rgba(255,255,255,0.35) inset,
-        0 0 20px rgba(86, 200, 255, 0.16);
-      font-weight: 900;
-      border-radius: 30px;
-      padding: 18px 26px;
-      align-self: center;
-      width: 100%;
-      min-height: 78px;
-      max-width: 520px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
-      letter-spacing: -0.01em;
-      text-align: center;
-    }
-
-    .btn-secondary::after,
-    .btn-back::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(86,200,255,0.15), rgba(255,255,255,0.42));
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    .btn-secondary:hover,
-    .btn-back:hover {
-      box-shadow:
-        0 18px 36px rgba(0, 0, 0, 0.26),
-        0 0 0 1px rgba(255,255,255,0.45) inset,
-        0 0 28px rgba(86, 200, 255, 0.22);
-    }
-
-    .results-box {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 14px;
-    }
-
-    .milhar-card {
-      background: linear-gradient(180deg, rgba(10, 24, 52, 0.96), rgba(4, 11, 29, 1));
-      border: 1.5px solid var(--border-strong);
-      border-radius: 20px;
-      min-height: 92px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 18px rgba(86, 200, 255, 0.12);
-      animation: cardPulse 4s ease-in-out infinite;
-    }
-
-    .milhar-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(115deg, transparent 24%, rgba(255,255,255,0.2) 42%, rgba(255,255,255,0.04) 52%, transparent 68%);
-      transform: translateX(-75%);
-      animation: shine 4.8s infinite ease-in-out;
-    }
-
-    @keyframes shine {
-      0%, 100% { transform: translateX(-75%); }
-      50% { transform: translateX(85%); }
-    }
-
-    @keyframes cardPulse {
-      0%, 100% { box-shadow: 0 0 18px rgba(86, 200, 255, 0.12); }
-      50% { box-shadow: 0 0 24px rgba(86, 200, 255, 0.2); }
-    }
-
-    .milhar-number {
-      position: relative;
-      z-index: 1;
-      font-family: var(--font-title);
-      font-size: clamp(1.75rem, 5vw, 2.35rem);
-      font-weight: 900;
-      letter-spacing: .05em;
-      color: var(--text);
-      text-shadow: 0 0 12px rgba(86, 200, 255, 0.18);
-    }
-
-    .muted {
-      color: var(--text-soft);
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .action-stack {
-      width: min(100%, 640px);
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      margin: 0 auto;
-      padding-top: 4px;
-    }
-
-    .history-box {
-      background: linear-gradient(180deg, rgba(10, 25, 56, 0.85), rgba(5, 13, 31, 0.92));
-      border: 1px solid var(--border);
-      border-radius: 26px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .history-title {
-      font-family: var(--font-title);
-      font-size: 1rem;
-      color: var(--cyan);
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .history-item {
-      border: 1px solid rgba(86, 200, 255, 0.18);
-      background: rgba(86, 200, 255, 0.05);
-      border-radius: 16px;
-      padding: 12px 14px;
-    }
-
-    .history-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 6px;
-      color: var(--white);
-      font-weight: 700;
-      font-size: 0.95rem;
-      flex-wrap: wrap;
-    }
-
-    .history-numbers {
-      color: var(--text-soft);
-      line-height: 1.5;
-      font-size: 0.92rem;
-      word-break: break-word;
-    }
-
-    .empty-note {
-      border: 1px dashed var(--border);
-      background: rgba(86, 200, 255, 0.04);
-      color: var(--text-soft);
-      border-radius: 18px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .footer-note {
-      margin-top: auto;
-      padding-top: 20px;
-      color: rgba(234, 248, 255, 0.48);
-      text-align: center;
-      font-size: 0.82rem;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(10px);
-      min-width: min(92vw, 360px);
-      padding: 14px 18px;
-      border-radius: var(--radius-pill);
-      background: rgba(255,255,255,.98);
-      color: #09111d;
-      border: 2px solid rgba(86, 200, 255, 0.7);
-      font-weight: 800;
-      box-shadow: 0 18px 32px rgba(0, 0, 0, 0.26);
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition), transform var(--transition);
-      z-index: 20;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    @media (max-width: 760px) {
-      .brand-badge { display: none; }
-      .hero { min-height: calc(100vh - 145px); }
-      .results-box { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    }
-
-    @media (max-width: 540px) {
-      .animal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-      .animal-card { min-height: 150px; padding: 14px 8px; }
-      .animal-icon { font-size: 2.2rem; }
-      .animal-dezenas { display: none; }
-      .qty-options { gap: 14px; }
-      .qty-btn { min-height: 92px; }
-      .section-title { font-size: 1.8rem; }
-      .btn-secondary,
-      .btn-back {
-        min-height: 72px;
-        border-radius: 26px;
-        font-size: 1rem;
-        padding: 16px 20px;
-      }
-      .action-stack {
-        gap: 14px;
-      }
-    }
-
-    @media (max-width: 400px) {
-      .animal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .results-box { grid-template-columns: 1fr; }
-      .qty-options { grid-template-columns: 1fr; width: 100%; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-        scroll-behavior: auto !important;
-      }
-    }
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
-  <canvas id="particle-canvas"></canvas>
-
-  <main class="app">
-    <div class="shell">
-      <header class="brand">
-        <div class="brand-name">CARLOS HENRICH</div>
-        <div class="brand-badge"></div>
-      </header>
-
-      <section id="view-home" class="view active">
-        <div class="hero">
-          <h1 class="title hero-title">GERADOR DE MILHAR</h1>
-          <p class="subtitle">.</p>
-          <button class="btn btn-primary btn-start" id="btn-start">Quero começar</button>
-        </div>
-      </section>
-
-      <section id="view-animal" class="view">
-        <div class="stack">
-          <h2 class="title section-title">Escolha seu bicho da sorte 🍀</h2>
-          <div class="animal-grid" id="animal-grid"></div>
-          <button class="btn btn-back" id="back-home">← Voltar</button>
-        </div>
-      </section>
-
-      <section id="view-qty" class="view">
-        <div class="selection-header">
-          <h2 class="title section-title">Quantos palpites você quer gerar? 🍀</h2>
-          <div class="selected-chip" id="selected-animal-chip">Nenhum bicho selecionado</div>
-          <div class="qty-options">
-            <button class="btn qty-btn" data-qty="4">4</button>
-            <button class="btn qty-btn" data-qty="6">6</button>
-            <button class="btn qty-btn" data-qty="8">8</button>
-          </div>
-          <button class="btn btn-back" id="back-animal">← Voltar</button>
-        </div>
-      </section>
-
-      <section id="view-results" class="view">
-        <div class="results-view">
-          <div class="stack">
-            <h2 class="title section-title">Seus palpites da sorte ✨</h2>
-            <p class="muted" id="result-animal-info">Seus números aparecerão aqui.</p>
-            <div class="results-box" id="results-list"></div>
-
-            <div class="action-stack">
-              <button class="btn btn-secondary" id="btn-copy"><span>📋</span><span>Copiar Palpites</span></button>
-              <button class="btn btn-secondary" id="btn-regenerate"><span>↺</span><span>Gerar Novamente</span></button>
-              <button class="btn btn-back" id="btn-change-animal"><span>←</span><span>Escolher outro bicho</span></button>
-            </div>
-
-            <div class="history-box">
-              <div class="history-title">Últimos palpites</div>
-              <div class="history-list" id="history-list"></div>
-            </div>
-          </div>
-          <p class="footer-note">© 2026·Carlos Henrich</p>
-        </div>
-      </section>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <div class="logo">CH</div>
+      <div class="brand"><h1>Palpiteiro de Milhares</h1><p>CARLOS HENRICH JB</p></div>
+      <div class="date-box" id="dateBox">📅</div>
     </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">✦ PRECISANDO DE UM PALPITE? </div>
+      <h2>PALPITEIRO DE <span>MILHARES</span></h2>
+      <div class="crown">♛</div>
+      <p>Escolha seus grupos e gere uma milhar para <b>cada dezena.</b></p>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div><p class="section-kicker">SEUS GRUPOS</p><h3 class="section-title">Selecione até 5 grupos</h3></div>
+        <div class="counter" id="counter">0/5</div>
+      </div>
+
+      <label for="promoter">Nome do Promotor <small>(opcional)</small></label>
+      <input class="name-input" id="promoter" value="Kelly Menezes JB" maxlength="45" />
+      <div class="animals" id="animals"></div>
+
+      <div class="actions">
+        <button class="action" data-mode="palpites"><span class="icon">🔀</span><span><strong>GERAR PALPITES</strong><small>Milhar para cada dezena</small></span></button>
+        <button class="action" data-mode="tiro"><span class="icon">🎯</span><span><strong>TIRO SECO</strong><small>Gerar uma combinação</small></span></button>
+        <button class="action" data-mode="fechado"><span class="icon">🔒</span><span><strong>BICHO FECHADO</strong><small>Quatro milhares do grupo</small></span></button>
+        <button class="action whatsapp" id="whatsapp"><span class="icon">💬</span><span><strong>GRUPO DE PALPITES</strong><small>Entrar pelo WhatsApp</small></span></button>
+        <button class="action register" id="register"><span class="icon">✨</span><span><strong>CADASTRE-SE</strong><small>Acessar página de registro</small></span></button>
+      </div>
+    </section>
+
+    <section class="results" id="results">
+      <div class="results-top"><div><p class="section-kicker">RESULTADOS</p><h3 class="section-title" id="resultTitle">Palpites Gerados</h3></div><button class="copy-all" id="copyAll">📋 Copiar</button></div>
+      <div id="resultList"></div>
+      <button class="share" id="share">Compartilhar resultados</button>
+    </section>
+
+    <section class="history" id="history">
+      <div class="results-top"><div><p class="section-kicker">HISTÓRICO</p><h3 class="section-title">Últimos palpites</h3></div><button class="clear" id="clear">Limpar</button></div>
+      <div id="historyList"></div>
+    </section>
   </main>
 
-  <div class="toast" id="toast">Palpites copiados com sucesso.</div>
+  <footer>
+    Ferramenta recreativa.<br>Não recebe apostas, pagamentos ou depósitos.<br><br>
+    <a href="#">Privacidade</a> · <a href="#">Termos</a>
+  </footer>
+  <div class="toast" id="toast">Copiado!</div>
 
-  <script>
-    const animais = [
-      { id: 1, nome: "Avestruz", icon: "🪶", dezenas: ["01", "02", "03", "04"] },
-      { id: 2, nome: "Águia", icon: "🦅", dezenas: ["05", "06", "07", "08"] },
-      { id: 3, nome: "Burro", icon: "🐴", dezenas: ["09", "10", "11", "12"] },
-      { id: 4, nome: "Borboleta", icon: "🦋", dezenas: ["13", "14", "15", "16"] },
-      { id: 5, nome: "Cachorro", icon: "🐶", dezenas: ["17", "18", "19", "20"] },
-      { id: 6, nome: "Cabra", icon: "🐐", dezenas: ["21", "22", "23", "24"] },
-      { id: 7, nome: "Carneiro", icon: "🐏", dezenas: ["25", "26", "27", "28"] },
-      { id: 8, nome: "Camelo", icon: "🐫", dezenas: ["29", "30", "31", "32"] },
-      { id: 9, nome: "Cobra", icon: "🐍", dezenas: ["33", "34", "35", "36"] },
-      { id: 10, nome: "Coelho", icon: "🐇", dezenas: ["37", "38", "39", "40"] },
-      { id: 11, nome: "Cavalo", icon: "🐎", dezenas: ["41", "42", "43", "44"] },
-      { id: 12, nome: "Elefante", icon: "🐘", dezenas: ["45", "46", "47", "48"] },
-      { id: 13, nome: "Galo", icon: "🐓", dezenas: ["49", "50", "51", "52"] },
-      { id: 14, nome: "Gato", icon: "🐈", dezenas: ["53", "54", "55", "56"] },
-      { id: 15, nome: "Jacaré", icon: "🐊", dezenas: ["57", "58", "59", "60"] },
-      { id: 16, nome: "Leão", icon: "🦁", dezenas: ["61", "62", "63", "64"] },
-      { id: 17, nome: "Macaco", icon: "🐒", dezenas: ["65", "66", "67", "68"] },
-      { id: 18, nome: "Porco", icon: "🐷", dezenas: ["69", "70", "71", "72"] },
-      { id: 19, nome: "Pavão", icon: "🦚", dezenas: ["73", "74", "75", "76"] },
-      { id: 20, nome: "Peru", icon: "🦃", dezenas: ["77", "78", "79", "80"] },
-      { id: 21, nome: "Touro", icon: "🐂", dezenas: ["81", "82", "83", "84"] },
-      { id: 22, nome: "Tigre", icon: "🐅", dezenas: ["85", "86", "87", "88"] },
-      { id: 23, nome: "Urso", icon: "🐻", dezenas: ["89", "90", "91", "92"] },
-      { id: 24, nome: "Veado", icon: "🦌", dezenas: ["93", "94", "95", "96"] },
-      { id: 25, nome: "Vaca", icon: "🐄", dezenas: ["97", "98", "99", "00"] }
-    ];
+<script>
+const animals=[
+[1,'🦤','Avestruz',[1,2,3,4]],[2,'🦅','Águia',[5,6,7,8]],[3,'🫏','Burro',[9,10,11,12]],[4,'🦋','Borboleta',[13,14,15,16]],[5,'🐶','Cachorro',[17,18,19,20]],
+[6,'🐐','Cabra',[21,22,23,24]],[7,'🐏','Carneiro',[25,26,27,28]],[8,'🐫','Camelo',[29,30,31,32]],[9,'🐍','Cobra',[33,34,35,36]],[10,'🐇','Coelho',[37,38,39,40]],
+[11,'🐎','Cavalo',[41,42,43,44]],[12,'🐘','Elefante',[45,46,47,48]],[13,'🐓','Galo',[49,50,51,52]],[14,'🐈','Gato',[53,54,55,56]],[15,'🐊','Jacaré',[57,58,59,60]],
+[16,'🦁','Leão',[61,62,63,64]],[17,'🐒','Macaco',[65,66,67,68]],[18,'🐖','Porco',[69,70,71,72]],[19,'🦚','Pavão',[73,74,75,76]],[20,'🦃','Peru',[77,78,79,80]],
+[21,'🐂','Touro',[81,82,83,84]],[22,'🐅','Tigre',[85,86,87,88]],[23,'🐻','Urso',[89,90,91,92]],[24,'🦌','Veado',[93,94,95,96]],[25,'🐄','Vaca',[97,98,99,0]]
+];
+const selected=new Set();
+const els={animals:document.querySelector('#animals'),counter:document.querySelector('#counter'),results:document.querySelector('#results'),resultList:document.querySelector('#resultList'),resultTitle:document.querySelector('#resultTitle'),history:document.querySelector('#history'),historyList:document.querySelector('#historyList'),toast:document.querySelector('#toast')};
+let current=[];
 
-    const STORAGE_KEY = 'carlos_henrich_historico_milhares';
-
-    const state = {
-      selectedAnimal: null,
-      currentQty: 4,
-      generatedMilhares: [],
-      history: []
-    };
-
-    const views = {
-      home: document.getElementById('view-home'),
-      animal: document.getElementById('view-animal'),
-      qty: document.getElementById('view-qty'),
-      results: document.getElementById('view-results')
-    };
-
-    const animalGrid = document.getElementById('animal-grid');
-    const selectedAnimalChip = document.getElementById('selected-animal-chip');
-    const resultAnimalInfo = document.getElementById('result-animal-info');
-    const resultsList = document.getElementById('results-list');
-    const historyList = document.getElementById('history-list');
-    const toast = document.getElementById('toast');
-    const btnCopy = document.getElementById('btn-copy');
-
-    function showView(viewKey) {
-      Object.values(views).forEach(view => view.classList.remove('active'));
-      views[viewKey].classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function createAnimalCard(animal) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'animal-card';
-      button.setAttribute('aria-label', `Selecionar ${animal.nome}`);
-      button.innerHTML = `
-        <div class="animal-icon">${animal.icon}</div>
-        <div class="animal-index">${animal.id}.</div>
-        <div class="animal-name">${animal.nome}</div>
-        <div class="animal-dezenas">${animal.dezenas.join(' • ')}</div>
-      `;
-      button.addEventListener('click', () => selectAnimal(animal));
-      return button;
-    }
-
-    function renderAnimals() {
-      animalGrid.innerHTML = '';
-      animais.forEach(animal => animalGrid.appendChild(createAnimalCard(animal)));
-      highlightSelectedAnimal();
-    }
-
-    function highlightSelectedAnimal() {
-      const cards = [...animalGrid.querySelectorAll('.animal-card')];
-      cards.forEach((card, index) => {
-        const active = state.selectedAnimal && animais[index].id === state.selectedAnimal.id;
-        card.classList.toggle('selected', active);
-      });
-    }
-
-    function selectAnimal(animal) {
-      state.selectedAnimal = animal;
-      selectedAnimalChip.innerHTML = `<span>${animal.icon}</span><span><strong>${animal.nome}</strong> • dezenas ${animal.dezenas.join(', ')}</span>`;
-      highlightSelectedAnimal();
-      showView('qty');
-    }
-
-    function uniqueMilhares(qty, dezenas) {
-      const set = new Set();
-      let attempts = 0;
-
-      while (set.size < qty && attempts < 800) {
-        const prefix = Math.floor(Math.random() * 100).toString().padStart(2, '0');
-        const suffix = dezenas[Math.floor(Math.random() * dezenas.length)];
-        set.add(prefix + suffix);
-        attempts += 1;
-      }
-
-      return [...set];
-    }
-
-    function generate(qty) {
-      if (!state.selectedAnimal) {
-        showToast('Escolha um bicho primeiro.');
-        showView('animal');
-        return;
-      }
-
-      state.currentQty = qty;
-      state.generatedMilhares = uniqueMilhares(qty, state.selectedAnimal.dezenas);
-      saveHistoryEntry();
-      renderResults();
-      renderHistory();
-      showView('results');
-    }
-
-    function renderResults() {
-      if (!state.generatedMilhares.length) {
-        resultsList.innerHTML = '<div class="empty-note">Nenhum palpite foi gerado ainda.</div>';
-        return;
-      }
-
-      resultAnimalInfo.textContent = `${state.selectedAnimal.icon} Bicho escolhido: ${state.selectedAnimal.nome} • ${state.currentQty} palpites gerados`;
-      resultsList.innerHTML = state.generatedMilhares.map(number => `
-        <article class="milhar-card"><span class="milhar-number">${number}</span></article>
-      `).join('');
-      btnCopy.textContent = '📋 Copiar Palpites';
-    }
-
-    function saveHistoryEntry() {
-      const entry = {
-        animal: state.selectedAnimal.nome,
-        icon: state.selectedAnimal.icon,
-        qty: state.currentQty,
-        numbers: [...state.generatedMilhares],
-        date: new Date().toLocaleString('pt-BR')
-      };
-
-      state.history.unshift(entry);
-      state.history = state.history.slice(0, 8);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.history));
-    }
-
-    function loadHistory() {
-      try {
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        state.history = Array.isArray(saved) ? saved : [];
-      } catch {
-        state.history = [];
-      }
-
-      renderHistory();
-    }
-
-    function renderHistory() {
-      if (!state.history.length) {
-        historyList.innerHTML = '<div class="empty-note">Seus últimos palpites vão aparecer aqui.</div>';
-        return;
-      }
-
-      historyList.innerHTML = state.history.map(item => `
-        <div class="history-item">
-          <div class="history-head">
-            <span>${item.icon} ${item.animal} • ${item.qty} palpites</span>
-            <span>${item.date}</span>
-          </div>
-          <div class="history-numbers">${item.numbers.join(' • ')}</div>
-        </div>
-      `).join('');
-    }
-
-    async function copyResults() {
-      if (!state.generatedMilhares.length || !state.selectedAnimal) {
-        showToast('Gere palpites antes de copiar.');
-        return;
-      }
-
-      const text = [`${state.selectedAnimal.icon} ${state.selectedAnimal.nome}`, ...state.generatedMilhares].join('\n');
-
-      try {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
-        } else {
-          const textarea = document.createElement('textarea');
-          textarea.value = text;
-          textarea.style.position = 'fixed';
-          textarea.style.left = '-9999px';
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand('copy');
-          textarea.remove();
-        }
-
-        btnCopy.textContent = '✅ Copiado';
-        showToast('Palpites copiados com sucesso.');
-      } catch (error) {
-        console.error(error);
-        showToast('Não foi possível copiar agora.');
-      }
-    }
-
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add('show');
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    document.getElementById('btn-start').addEventListener('click', () => showView('animal'));
-    document.getElementById('back-home').addEventListener('click', () => showView('home'));
-    document.getElementById('back-animal').addEventListener('click', () => showView('animal'));
-    document.getElementById('btn-regenerate').addEventListener('click', () => generate(state.currentQty));
-    document.getElementById('btn-change-animal').addEventListener('click', () => showView('animal'));
-    btnCopy.addEventListener('click', copyResults);
-
-    document.querySelectorAll('.qty-btn').forEach(button => {
-      button.addEventListener('click', () => generate(Number(button.dataset.qty)));
-    });
-
-    function initParticles() {
-      const canvas = document.getElementById('particle-canvas');
-      const ctx = canvas.getContext('2d');
-      let particles = [];
-      let animationId;
-
-      function resize() {
-        const ratio = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * ratio;
-        canvas.height = window.innerHeight * ratio;
-        canvas.style.width = `${window.innerWidth}px`;
-        canvas.style.height = `${window.innerHeight}px`;
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-        createParticles();
-      }
-
-      function createParticles() {
-        const count = Math.max(45, Math.min(110, Math.floor(window.innerWidth / 12)));
-        particles = Array.from({ length: count }, () => ({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          radius: Math.random() * 2.2 + 0.6,
-          speedY: Math.random() * 0.6 + 0.15,
-          speedX: (Math.random() - 0.5) * 0.35,
-          alpha: Math.random() * 0.7 + 0.2,
-          twinkle: Math.random() * 0.03 + 0.01
-        }));
-      }
-
-      function draw() {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-        for (const p of particles) {
-          p.y -= p.speedY;
-          p.x += p.speedX;
-          p.alpha += Math.sin(Date.now() * p.twinkle) * 0.002;
-
-          if (p.y < -10) {
-            p.y = window.innerHeight + 10;
-            p.x = Math.random() * window.innerWidth;
-          }
-
-          if (p.x < -20) p.x = window.innerWidth + 10;
-          if (p.x > window.innerWidth + 20) p.x = -10;
-
-          ctx.beginPath();
-          ctx.fillStyle = `rgba(110, 220, 255, ${Math.max(0.15, Math.min(1, p.alpha))})`;
-          ctx.shadowColor = 'rgba(86, 200, 255, 0.8)';
-          ctx.shadowBlur = 12;
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        animationId = requestAnimationFrame(draw);
-      }
-
-      resize();
-      draw();
-      window.addEventListener('resize', resize);
-      window.addEventListener('beforeunload', () => cancelAnimationFrame(animationId));
-    }
-
-    renderAnimals();
-    loadHistory();
-    initParticles();
-  </script>
+animals.forEach(a=>{
+ const b=document.createElement('button'); b.className='animal'; b.dataset.group=a[0]; b.style.animationDelay=`${(a[0]-1)*28}ms`;
+ b.innerHTML=`<span class="num">${String(a[0]).padStart(2,'0')}</span><span class="emoji">${a[1]}</span><span class="name">${a[2]}</span>`;
+ b.onclick=()=>toggle(a[0],b); els.animals.appendChild(b);
+});
+function toggle(group,el){
+ if(selected.has(group)){selected.delete(group);el.classList.remove('selected')}
+ else if(selected.size<5){selected.add(group);el.classList.add('selected')}
+ else return toast('Selecione no máximo 5 grupos.');
+ els.counter.textContent=`${selected.size}/5`; els.counter.classList.remove('bump'); void els.counter.offsetWidth; els.counter.classList.add('bump');
+}
+function toast(msg){els.toast.textContent=msg;els.toast.classList.add('show');setTimeout(()=>els.toast.classList.remove('show'),1800)}
+function rnd(n){return Math.floor(Math.random()*n)}
+function milharFor(dezena){return `${String(rnd(100)).padStart(2,'0')}${String(dezena).padStart(2,'0')}`}
+function selectedAnimals(){return [...selected].map(g=>animals.find(a=>a[0]===g))}
+function generate(mode){
+ const chosen=selectedAnimals(); if(!chosen.length)return toast('Selecione pelo menos um grupo.');
+ let out=[]; let title='Palpites Gerados';
+ if(mode==='palpites'){
+  chosen.forEach(a=>a[3].forEach(d=>out.push({group:a[0],emoji:a[1],name:a[2],milhar:milharFor(d)})));
+ } else if(mode==='tiro'){
+  title='Tiro Seco'; chosen.forEach(a=>{const d=a[3][rnd(4)];out.push({group:a[0],emoji:a[1],name:a[2],milhar:milharFor(d)})});
+ } else {
+  title='Bicho Fechado'; chosen.forEach(a=>a[3].forEach(d=>out.push({group:a[0],emoji:a[1],name:a[2],milhar:milharFor(d)})));
+ }
+ current=out; renderResults(title); saveHistory(title,out); window.scrollTo({top:els.results.offsetTop-90,behavior:'smooth'});
+}
+function renderResults(title){
+ els.resultTitle.textContent=title;els.resultList.innerHTML='';
+ current.forEach((r,i)=>{const row=document.createElement('div');row.className='result-row';row.style.animationDelay=`${i*45}ms`;row.innerHTML=`<div class="group-number">${String(r.group).padStart(2,'0')}</div><div><div class="milhar">${r.milhar}</div><div class="animal-label">${r.emoji} ${r.name}</div></div><button class="copy-one" aria-label="Copiar ${r.milhar}">📋</button>`;row.querySelector('button').onclick=()=>copyText(r.milhar);els.resultList.appendChild(row)});
+ els.results.classList.add('show');
+}
+function resultText(){const name=document.querySelector('#promoter').value.trim()||'Kelly Menezes JB';return `🎯 Palpites de ${name}\n\n`+current.map(r=>`${String(r.group).padStart(2,'0')} ${r.milhar}`).join('\n')+`\n\n🌐 carloshenrich.app`}
+async function copyText(text){try{await navigator.clipboard.writeText(text);toast('Copiado!')}catch{toast('Não foi possível copiar.')}}
+function saveHistory(title,out){
+ const history=JSON.parse(localStorage.getItem('km_history')||'[]');history.unshift({title,date:new Date().toLocaleString('pt-BR'),items:out});localStorage.setItem('km_history',JSON.stringify(history.slice(0,10)));renderHistory();
+}
+function renderHistory(){
+ const history=JSON.parse(localStorage.getItem('km_history')||'[]');els.historyList.innerHTML='';
+ if(!history.length){els.history.classList.remove('show');return}
+ history.forEach(h=>{const card=document.createElement('div');card.className='history-card';card.innerHTML=`<h4>${h.title}</h4><p>${h.date}</p><p>${h.items.map(i=>`${String(i.group).padStart(2,'0')}: ${i.milhar}`).join(' · ')}</p>`;els.historyList.appendChild(card)});els.history.classList.add('show');
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>generate(b.dataset.mode));
+document.querySelector('#copyAll').onclick=()=>copyText(resultText());
+document.querySelector('#share').onclick=async()=>{const text=resultText();if(navigator.share){try{await navigator.share({title:`Palpites de ${document.querySelector('#promoter').value.trim()||'Kelly Menezes JB'}`,text})}catch{}}else copyText(text)};
+document.querySelector('#clear').onclick=()=>{localStorage.removeItem('km_history');renderHistory();toast('Histórico limpo.')};;
+document.querySelector('#whatsapp').onclick=()=>window.open('https://chat.whatsapp.com/Kw2S3HEIpKu1aMLWoKSzzo','_blank');
+document.querySelector('#register').onclick=()=>window.location.href='https://carloshenrich.app';
+document.querySelector('#dateBox').title=new Date().toLocaleDateString('pt-BR');
+renderHistory();
+</script>
 </body>
 </html>
