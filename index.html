@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content=G"width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#030b18" />
   <meta name="description" content="palpiteiro recreativo de milhares Carlos Henrich JB" />
   <title>Palpiteiro de Milhares | Carlos Henrich JB</title>
@@ -257,7 +257,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>generate(b.dat
 document.querySelector('#copyAll').onclick=()=>copyText(resultText());
 document.querySelector('#share').onclick=async()=>{const text=resultText();if(navigator.share){try{await navigator.share({title:`Palpites de ${document.querySelector('#promoter').value.trim()||'Kelly Menezes JB'}`,text})}catch{}}else copyText(text)};
 document.querySelector('#clear').onclick=()=>{localStorage.removeItem('km_history');renderHistory();toast('Histórico limpo.')};;
-document.querySelector('#whatsapp').onclick=()=>window.open('https://chat.whatsapp.com/Kw2S3HEIpKu1aMLWoKSzzo','_blank');
+document.querySelector('#whatsapp').onclick=()=>window.open('https://chat.whatsapp.com/BsK9TQQaR142jL3MMTEyRS?s=cl&p=a&mlu=4&ilr=4','_blank');
 document.querySelector('#register').onclick=()=>window.location.href='https://carloshenrich.app';
 document.querySelector('#dateBox').title=new Date().toLocaleDateString('pt-BR');
 renderHistory();
